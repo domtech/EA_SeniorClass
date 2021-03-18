@@ -49,7 +49,7 @@
             float4 frag (v2f i) : SV_Target//vector4
             {
 
-                return float4(i.uv,0,1);
+                //return float4(i.uv,0,1);
 
                 //return float4(i.normal, 1);
                 // sample the texture
