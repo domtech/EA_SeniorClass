@@ -72,7 +72,7 @@
 
                 float c2 = tex2D(_DetailTex, i.detailuv);
                 
-                float4 ret = c1 * splat.r + c2 * (1 - splat.r);
+                float4 ret = (c1 * splat.r + c2 * (1 - splat.r)) * _BrightCtrl;
 
                 return ret;
             }
