@@ -27,6 +27,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 5859fde215218e8488695d851006e4af, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SplatMap:
+        m_Texture: {fileID: 2800000, guid: 4f31f332846979045bafa3a769f01a59, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BrightCtrl: 2
     - _Tilling: 1
