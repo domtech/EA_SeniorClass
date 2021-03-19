@@ -3,7 +3,7 @@
 public class ScaleTransformation : Transformation
 {
 
-    public Vector3 Scale;
+    public Vector3 Scale = Vector3.one;
     public override Matrix4x4 Matrix
     {
         get

@@ -305,8 +305,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2125452103}
-  - component: {fileID: 2125452104}
   - component: {fileID: 2125452102}
+  - component: {fileID: 2125452105}
+  - component: {fileID: 2125452104}
   m_Layer: 0
   m_Name: tur3
   m_TagString: Untagged
@@ -354,8 +355,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 2125452101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 348cd914c7a859142a7204eb079a6ab0, type: 3}
+  m_Script: {fileID: 11500000, guid: c2cb96aa84f82374482144f3daeee904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransPos: {x: 0, y: 0, z: 0}
-  TransScale: {x: 1, y: 1, z: 1}
+  Scale: {x: 1, y: 1, z: 1}
+--- !u!114 &2125452105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125452101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c47006230ce2b0545bcf9dd5013bb329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
