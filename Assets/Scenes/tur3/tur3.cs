@@ -8,60 +8,31 @@ public class tur3 : MonoBehaviour
     public GameObject SpawnCube;
     const float CircleRound = 10;
     public float Scale;
-
-    List<TransformBase> TransList;
-    Transformation transInst;
-
+    List<Transformation> TransList;
+    List<TransBase> TransBaseList;
     #endregion
 
     #region Sys
     private void Awake()
     {
-        TransList = new List<TransformBase>();
-        transInst = gameObject.GetComponent<Transformation>();
+        TransBaseList = new List<TransBase>();
+        TransList = new List<Transformation>();
     }
 
     private void Start()
     {
         Generate();
-        transInst.Init();
+
     }
 
     private void Update()
     {
-        transInst.OnTransPos(TransList);
+        UpdateMatrixTrans();
+        UpdateTransInfo();
     }
     #endregion
 
     #region Genrate Sphere
-    void CircleSurface(float degree, float radius)
-    {
-        float tmpRadius = radius;
-        for (var j = 0; j < CircleRound; j++)
-        {
-            var tmpCircleNum = MaxCircleNum - MaxCircleNum / CircleRound * j;
-            var eachDegree = 360f / tmpCircleNum;
-            tmpRadius = radius * (tmpCircleNum/ MaxCircleNum);
-            for (var i = 0; i < tmpCircleNum; i++)
-            {
-                var obj = Instantiate(SpawnCube);
-                
-                obj.transform.SetParent(transform);
-               
-                obj.transform.localPosition = new Vector3(tmpRadius * Mathf.Cos(eachDegree * i), Radius * Mathf.Sin(degree), tmpRadius * Mathf.Sin(eachDegree * i));
-                obj.transform.localRotation = Quaternion.identity;
-                obj.transform.localScale = Vector3.one * Scale;
-                obj.GetComponent<MeshRenderer>().material.SetColor("_Color", new Color(
-                  Mathf.Abs(Mathf.Cos(eachDegree * i)),
-                  Mathf.Abs(Mathf.Sin(degree)),
-                  Mathf.Abs(Mathf.Sin(eachDegree * i))
-                 ));
-
-                TransList.Add(obj.GetComponent<TransformBase>());
-            }
-        }
-    }
-
     void Generate()
     {
         for (int i = 0; i < 10; i++)
@@ -71,10 +42,61 @@ public class tur3 : MonoBehaviour
         }
     }
 
+    void CircleSurface(float degree, float radius)
+    {
+        float tmpRadius = radius;
+        for (var j = 0; j < CircleRound; j++)
+        {
+            var tmpCircleNum = MaxCircleNum - MaxCircleNum / CircleRound * j;
+            var eachDegree = 360f / tmpCircleNum;
+            tmpRadius = radius * (tmpCircleNum / MaxCircleNum);
+            for (var i = 0; i < tmpCircleNum; i++)
+            {
+                var obj = Instantiate(SpawnCube);
+                var transbase = obj.GetComponent<TransBase>();
+                obj.transform.SetParent(transform);
+                transbase.SetOrigLocalPos(new Vector3(tmpRadius * Mathf.Cos(eachDegree * i), Radius * Mathf.Sin(degree), tmpRadius * Mathf.Sin(eachDegree * i)));
+                obj.transform.localPosition = transbase.OrigLocalPos;
+                obj.transform.localRotation = Quaternion.identity;
+                obj.transform.localScale = Vector3.one * Scale;
+                obj.GetComponent<MeshRenderer>().material.SetColor("_Color", new Color(
+                  Mathf.Abs(Mathf.Cos(eachDegree * i)),
+                  Mathf.Abs(Mathf.Sin(degree)),
+                  Mathf.Abs(Mathf.Sin(eachDegree * i))
+                 ));
+
+                TransBaseList.Add(transbase);
+            }
+        }
+    }
+
     #endregion
 
- 
+    #region Update Matrix Transformation
+    Matrix4x4 transformation;
+    void UpdateMatrixTrans ()
+    {
+        GetComponents<Transformation>(TransList);
+
+        transformation = TransList[0].Matrix;
+    }
+
+    void UpdateTransInfo()
+    {
+        for(var i = 0; i < TransBaseList.Count; i++)
+        {
+            var tb = TransBaseList[i];
+            tb.transform.localPosition = transformation.MultiplyPoint(tb.OrigLocalPos);
+        }
+    }
+    #endregion
 }
+
+
+
+
+
+
 
 //void OneCircle(int tmpCircleNum, float tmpRadius)
 //{

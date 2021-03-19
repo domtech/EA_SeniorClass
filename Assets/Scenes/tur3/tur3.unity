@@ -331,7 +331,6 @@ MonoBehaviour:
   SpawnCube: {fileID: 1034759715600485479, guid: e1ad2a15f034c0849a4f18bbc64ce745,
     type: 3}
   Scale: 0.6
-  TransPos: {x: 0, y: 0, z: 0}
 --- !u!4 &2125452103
 Transform:
   m_ObjectHideFlags: 0
@@ -358,3 +357,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348cd914c7a859142a7204eb079a6ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TransPos: {x: 0, y: 0, z: 0}
+  TransScale: {x: 1, y: 1, z: 1}
