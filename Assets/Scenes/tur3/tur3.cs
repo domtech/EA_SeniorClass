@@ -79,6 +79,15 @@ public class tur3 : MonoBehaviour
         GetComponents<Transformation>(TransList);
 
         transformation = TransList[0].Matrix;
+
+        if(TransList.Count > 1)
+        {
+            for(var i = 1; i < TransList.Count; i++)
+            {
+                transformation = TransList[i].Matrix * transformation;
+            }
+        }
+
     }
 
     void UpdateTransInfo()
