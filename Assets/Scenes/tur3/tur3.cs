@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class tur3 : MonoBehaviour
 {
     #region Paras
+    List<TransBase> TransBaseList;
     #endregion
 
     #region Sys
     private void Awake()
     {
 
-        if(RoundNum %2 == 1)
+        TransBaseList = new List<TransBase>();
+
+        if (RoundNum %2 == 1)
         {
             RoundNum += 1;
         }
@@ -17,7 +21,14 @@ public class tur3 : MonoBehaviour
     }
     void Start()
     {
-        
+        InitUpdateMatrix();
+    }
+
+    private void Update()
+    {
+        UpdateTransMatrix();
+
+        UpdateTransInfo();
     }
     #endregion
 
@@ -66,9 +77,15 @@ public class tur3 : MonoBehaviour
                 var obj = Instantiate(SpawnSphere);
                 
                 obj.transform.SetParent(transform);
+
+                var tb = obj.GetComponent<TransBase>();
+
+                var tmpPos = new Vector3(CurRadius * Mathf.Cos(eachDegree * i), height, CurRadius * Mathf.Sin(eachDegree * i));
                 
-                obj.transform.localPosition = new Vector3(CurRadius * Mathf.Cos(eachDegree * i), height, CurRadius * Mathf.Sin(eachDegree * i));
-                
+                tb.SetTransOrigPos(tmpPos);
+
+                obj.transform.localPosition = tmpPos;
+
                 obj.transform.localRotation = Quaternion.identity;
                 
                 obj.transform.localScale = Vector3.one * SpereScale;
@@ -81,6 +98,7 @@ public class tur3 : MonoBehaviour
                     Mathf.Abs(Mathf.Sin(eachDegree * i * Mathf.Deg2Rad))
                     ));
 
+                TransBaseList.Add(tb);
             }
         }
     }
@@ -93,5 +111,43 @@ public class tur3 : MonoBehaviour
             CircleSurface(rate, i);
         }
     }
+    #endregion
+
+    #region Update Transform Matrix
+
+    List<Transformation> TransList;
+
+    Matrix4x4 transformation;
+
+    void InitUpdateMatrix()
+    {
+        TransList = new List<Transformation>();
+    }
+
+    void UpdateTransMatrix()
+    {
+        GetComponents(TransList);
+
+        transformation = TransList[0].Matrix;
+
+        if(TransList.Count > 1)
+        {
+            for(var i = 1; i< TransList.Count; i++)
+            {
+                transformation = TransList[i].Matrix * transformation;
+            }
+        }
+    }
+
+
+    void UpdateTransInfo()
+    {
+        for(var i = 0; i < TransBaseList.Count; i++)
+        {
+            var item = TransBaseList[i];
+            item.transform.localPosition = transformation.MultiplyPoint(item.OrigTransPos);
+        }
+    }
+
     #endregion
 }
