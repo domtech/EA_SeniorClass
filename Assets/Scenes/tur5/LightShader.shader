@@ -5,6 +5,7 @@
         _MainTex ("Texture", 2D) = "white" {}
         _LightColor ("Light Color", Color) = (1,1,1,1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.5
+        _Metal ("Metal", Range(0,1)) = 0.5
     }
     SubShader
     {
@@ -39,6 +40,7 @@
             float4 _MainTex_ST;
             float4 _LightColor;
             float _Smoothness;
+            float _Metal;
 
             v2f vert (appdata v)
             {
@@ -58,23 +60,22 @@
 
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
                 
-               
+                float3 albedo = tex2D(_MainTex, i.uv).rgb;
 
                  //reflect dir
                 float3 reflectDir = reflect (-lightDir, i.normal);
-
-                //return float4(reflectDir * 0.5 + 0.5, 1);
-
                 // view dir
 
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
-                return  pow(saturate(dot(viewDir, reflectDir)), _Smoothness * 100);
+                float3 specular =  _Metal * pow(saturate(dot(viewDir, reflectDir)), _Smoothness * 100);
 
-                
-                 float3 albedo = tex2D(_MainTex, i.uv).rgb;
+                float3 diffuse = _LightColor * dot(lightDir, i.normal) * albedo;
 
-                 return float4(_LightColor * dot(lightDir, i.normal) * albedo, 1);
+                //return  _Metal * pow(saturate(dot(viewDir, reflectDir)), _Smoothness * 100);
+
+
+                 return float4(diffuse + specular, 1);
 
             }
             ENDCG
