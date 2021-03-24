@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _LightColor ("Light Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -34,6 +35,7 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float4 _LightColor;
 
             v2f vert (appdata v)
             {
@@ -45,13 +47,20 @@
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            float4 frag (v2f i) : SV_Target
             {
                 //-1,1 -> (0, 1)
                 i.normal = normalize(i.normal);
-                float4 col = float4(i.normal * 0.5 + 0.5, 1);
 
-                return col;
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                
+                float3 albedo = tex2D(_MainTex, i.uv).rgb;
+
+                return float4(_LightColor * dot(lightDir, i.normal) * albedo, 1);
+
+                // float4 col = float4(i.normal * 0.5 + 0.5, 1);
+
+                // return col;
             }
             ENDCG
         }
