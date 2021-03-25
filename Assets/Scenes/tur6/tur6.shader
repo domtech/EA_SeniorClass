@@ -1,8 +1,20 @@
 ﻿Shader "Custom/tur6"
 {
+
+
+//normal map
+
+// bumping map
+
+// gray texture (0, 255)
+//r, g, b
+
+
+
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _HeightMap ( "Height Tex", 2D) = "gray" {}
         _LightColor ("Light Color", Color) = (1,1,1,1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.5
         _Metal ("Metal", Range(0,1)) = 0.5
@@ -42,6 +54,9 @@
             float _Smoothness;
             float _Metal;
 
+            sampler2D _HeightMap;
+            float4 _HeightMap_TexelSize;// (x, y), deltaX, deltaY, (z, w) width, height.
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -55,6 +70,31 @@
 
             float4 frag (v2f i) : SV_Target
             {
+                
+                float2 deltaX = float2(_HeightMap_TexelSize.x, 0);
+                
+                float2 deltaY = float2(0, _HeightMap_TexelSize.y);
+
+                float h1 = tex2D(_HeightMap, i.uv);
+
+                float h2 = tex2D(_HeightMap, i.uv + deltaX);
+
+                float h3 = tex2D(_HeightMap, i.uv + deltaY);
+
+                float3 t1 = float3 (0.5, h2 - h1, 0);
+
+                float3 t2 = float3(0, h3 - h1, 0.5);
+
+                i.normal = cross(t2, t1);
+
+
+
+
+                //i.normal = float3 (deltaX.x, h2 - h1, 0); //(-y, x, z)
+
+                //i.normal = float3 (h1 - h2, 0.1, 0); //(-y, x, z)
+
+
                 //-1,1 -> (0, 1)
                 i.normal = normalize(i.normal);
 
