@@ -18,6 +18,7 @@
         _LightColor ("Light Color", Color) = (1,1,1,1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.5
         _Metal ("Metal", Range(0,1)) = 0.5
+        _BumpScale("Bump", Range(0,1)) = 1
     }
     SubShader
     {
@@ -57,13 +58,15 @@
             sampler2D _HeightMap;
             float4 _HeightMap_TexelSize;// (x, y), deltaX, deltaY, (z, w) width, height.
 
+            float _BumpScale;
+
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 //o.normal = mul(unity_ObjectToWorld, float4(v.normal, 0));
-                o.normal = UnityObjectToWorldNormal(v.normal);
+                ///o.normal = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
@@ -71,24 +74,29 @@
             float4 frag (v2f i) : SV_Target
             {
                 
-                float2 deltaX = float2(_HeightMap_TexelSize.x, 0);
+                // float2 deltaX = float2(_HeightMap_TexelSize.x, 0);
                 
-                float2 deltaY = float2(0, _HeightMap_TexelSize.y);
+                // float2 deltaY = float2(0, _HeightMap_TexelSize.y);
 
-                float h1 = tex2D(_HeightMap, i.uv);
+                // float h1 = tex2D(_HeightMap, i.uv);
 
-                float h2 = tex2D(_HeightMap, i.uv + deltaX);
+                // float h2 = tex2D(_HeightMap, i.uv + deltaX);
 
-                float h3 = tex2D(_HeightMap, i.uv + deltaY);
+                // float h3 = tex2D(_HeightMap, i.uv + deltaY);
 
-                float3 t1 = float3 (0.5, h2 - h1, 0);
+                // float3 t1 = float3 (0.5, h2 - h1, 0);
 
-                float3 t2 = float3(0, h3 - h1, 0.5);
+                // float3 t2 = float3(0, h3 - h1, 0.5);
 
-                i.normal = cross(t2, t1);
+                // i.normal = cross(t2, t1);
 
+                i.normal.xy = tex2D(_HeightMap, i.uv).wy * 2 - 1;
 
+                i.normal.xy *= _BumpScale;
 
+                i.normal.z = sqrt (1 - saturate(dot(i.normal.xy, i.normal.xy)));
+
+                i.normal = i.normal.xzy;
 
                 //i.normal = float3 (deltaX.x, h2 - h1, 0); //(-y, x, z)
 
