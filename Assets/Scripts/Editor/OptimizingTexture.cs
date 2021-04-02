@@ -10,6 +10,32 @@ public class OptimizingTexture : ScriptableObject
     static TextureImporterFormat currentTIFormat;
     #endregion
 
+    #region Set Texture Read/Write
+    //SetTexReadWriteMode
+    [MenuItem("Optimization/Texture Import Settings/SetTexReadWriteMode/EnableReadWrite")]
+    static void ChangeTextureProperty_etTexReadWriteMode_EnableReadWrite()
+    {
+
+        TextureImportParams tiParams = new TextureImportParams(Actions.SetTexReadWriteMode);
+
+        tiParams.TexReadWrite = true;
+
+        SelectedChangeAnyPlatformSettings(tiParams);
+    }
+
+    [MenuItem("Optimization/Texture Import Settings/SetTexReadWriteMode/DisableReadWrite")]
+    static void ChangeTextureProperty_etTexReadWriteMode_DisableReadWrite()
+    {
+
+        TextureImportParams tiParams = new TextureImportParams(Actions.SetTexReadWriteMode);
+
+        tiParams.TexReadWrite = false;
+
+        SelectedChangeAnyPlatformSettings(tiParams);
+    }
+
+    #endregion
+
     #region Texture Format
     [MenuItem("Optimization/Texture Import Settings/Change Texture Format/Android/ETC_RGB4")]
     static void ChangeTextureFormat_Android_ETC_RGB4()
@@ -112,43 +138,25 @@ public class OptimizingTexture : ScriptableObject
     }
     #endregion
 
-    #region Set Alpha is transparency
-    [MenuItem("Optimization/Texture Import Settings/SetAlphaTransparency")]
-    static void ChangeTextureProperty_SetAlphaTransparency()
+    #region Check Big Texture
+    [MenuItem("Optimization/Texture Import Settings/CheckTextureSize")]
+    static void ChangeTextureProperty_CheckTextureSize()
     {
-
-        TextureImportParams tiParams = new TextureImportParams(Actions.CheckAndSetTexAlpha);
+        TextureImportParams tiParams = new TextureImportParams(Actions.CheckBigTextureSize);
 
         SelectedChangeAnyPlatformSettings(tiParams);
     }
-    #endregion
-
-    #region Set Texture Read/Write
-    //SetTexReadWriteMode
-    [MenuItem("Optimization/Texture Import Settings/SetTexReadWriteMode/EnableReadWrite")]
-    static void ChangeTextureProperty_etTexReadWriteMode_EnableReadWrite()
+    static void CheckTextureSize(string path)
     {
+        Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
 
-        TextureImportParams tiParams = new TextureImportParams(Actions.SetTexReadWriteMode);
-
-        tiParams.TexReadWrite = true;
-
-        SelectedChangeAnyPlatformSettings(tiParams);
-    }
-
-    [MenuItem("Optimization/Texture Import Settings/SetTexReadWriteMode/DisableReadWrite")]
-    static void ChangeTextureProperty_etTexReadWriteMode_DisableReadWrite()
-    {
-
-        TextureImportParams tiParams = new TextureImportParams(Actions.SetTexReadWriteMode);
-
-        tiParams.TexReadWrite = false;
-
-        SelectedChangeAnyPlatformSettings(tiParams);
+        if(tex.width >= 512 || tex.height >= 512)
+        {
+            Debug.LogFormat("width:({0}), height:({1}), path:{2}", tex.width, tex.height, path);
+        }
     }
 
     #endregion
-
 
     static void SelectedChangeAnyPlatformSettings(TextureImportParams TexImportParam)
     {
@@ -173,8 +181,6 @@ public class OptimizingTexture : ScriptableObject
             string path = AssetDatabase.GetAssetPath(texture);
 
             TextureImporter texImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-
-            
 
             texImporter.GetPlatformTextureSettings(TexImportParam.platform.ToString(), out currentMaxTextureSize, out currentTIFormat);
 
@@ -206,9 +212,6 @@ public class OptimizingTexture : ScriptableObject
                     {
 
                         //获取纹理大小
-
-                        //var tex = AssetDatabase.FindAssets
-
                         Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
 
                         //判断是否是2的幂指数
@@ -223,7 +226,7 @@ public class OptimizingTexture : ScriptableObject
 
                         Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
 
-                        if (!IsPowerOfTwo((ulong)tex.width) || !IsPowerOfTwo((ulong)tex.height))
+                        if (IsPowerOfTwo((ulong)tex.width) && IsPowerOfTwo((ulong)tex.height))
                         {
                             texImporter.npotScale = TextureImporterNPOTScale.None;
                         }
@@ -231,40 +234,19 @@ public class OptimizingTexture : ScriptableObject
                             
                         break;
                     }
-                case Actions.CheckAndSetTexAlpha: {
-
-
-                        if (!texImporter.isReadable) {
-
-                            Debug.LogError("AlphaTransparency need readable");
-                            break;
-                        }
-
-                        Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-
-                        var cols = tex.GetPixels();
-                        int i = 1;
-                        var index = cols[0];
-                        for (i = 1; i < cols.Length; i++) {
-
-                            if (index != cols[i])
-                                break;
-                        }
-
-                        if (i == cols.Length) {
-                            texImporter.alphaIsTransparency = false;
-                         }
-                         
-
-
-                        break;
-                    }
+           
                 case Actions.SetTexReadWriteMode:
                     {
 
                         texImporter.isReadable = TexImportParam.TexReadWrite;
                         break;
 
+                    }
+
+                case Actions.CheckBigTextureSize:
+                    {
+                        CheckTextureSize(path);
+                        break;
                     }
             }
 
@@ -289,3 +271,4 @@ public class OptimizingTexture : ScriptableObject
 
     #endregion
 }
+
