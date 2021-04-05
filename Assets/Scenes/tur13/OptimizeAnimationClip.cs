@@ -65,11 +65,11 @@ public class OptimizeAnimationClip
             for (int j = 0; j < tKeyFrameArr.Length; j++)
             {
                 tKey = tKeyFrameArr[j];
-                tKey.value = float.Parse(tKey.value.ToString("f") + FloatNumber.ToString());    //#.###
-                tKey.inWeight = float.Parse(tKey.value.ToString("f") + FloatNumber.ToString());
-                tKey.outWeight = float.Parse(tKey.value.ToString("f") + FloatNumber.ToString());
-                tKey.inTangent = float.Parse(tKey.inTangent.ToString("f") + FloatNumber.ToString());
-                tKey.outTangent = float.Parse(tKey.outTangent.ToString("f") + FloatNumber.ToString());
+                tKey.value = float.Parse(tKey.value.ToString("f2"));    //#.###
+                tKey.inWeight = float.Parse(tKey.value.ToString("f2") );
+                tKey.outWeight = float.Parse(tKey.value.ToString("f2"));
+                tKey.inTangent = float.Parse(tKey.inTangent.ToString("f2"));
+                tKey.outTangent = float.Parse(tKey.outTangent.ToString("f2"));
                 tKeyFrameArr[j] = tKey;
             }
             tCurveData.curve.keys = tKeyFrameArr;
